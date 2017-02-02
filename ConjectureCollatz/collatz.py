@@ -1,52 +1,51 @@
+# -*- coding: utf-8 -*-
+
 import os
 
-_cache = {1: 1}
+_cache = {}
 
 
 def optimization(function):
-    def cache(n, steps=0, cached=True):
+    def cache(n, cached=True):
+        if not cached:
+            return function(n, cached=cached)
+
         if n in _cache and cached:
-            return _cache[n] + 1
+            return _cache[n]
 
         else:
-            _steps = function(n, steps=0)
-            _cache[n] = _steps
-            return _steps + steps
+            _cache[n] = function(n, cached=cached)
+            return _cache[n]
 
     return cache
 
 
 @optimization
-def collatz(n, steps=0):
-    steps += 1
-
+def collatz(n, **kwargs):
     if n <= 1:
-        return steps
+        return 1
 
     elif n % 2 == 0:
-        return collatz(n / 2, steps=steps)
+        return collatz(n / 2, **kwargs) + 1
 
     else:
-        return collatz((n * 3) + 1, steps=steps)
+        return collatz((n * 3) + 1, **kwargs) + 1
 
 
-def run(number):
-    biggest_steps = {"number": 0, "steps": 0}
+def run(max_number):
+    _number = 0
+    _steps = 0
 
-    for n in range(number):
+    for n in range(max_number):
         steps = collatz(n)
-        if steps > biggest_steps['steps']:
-            biggest_steps['number'] = n
-            biggest_steps['steps'] = steps
+        if steps > _steps:
+            _number = n
+            _steps = steps
 
-    without_cache = {
-        "number": biggest_steps['number'],
-        "steps": collatz(biggest_steps['number'], cached=False)
-    }
-
-    print('Solution with cache: {}'.format(biggest_steps))
-    print('Solution without cache: {}'.format(without_cache))
+    print('Solution with cache: number = {0}, steps = {1}'.format(_number, _steps))
     print('Amunt of numbers in cache: {}'.format(len(_cache)))
+
+    return _number, _steps
 
 if __name__ == '__main__':
     number = int(os.environ.get('NUMBER', None))
