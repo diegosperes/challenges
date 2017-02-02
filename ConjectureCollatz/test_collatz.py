@@ -5,7 +5,7 @@ import unittest
 import collatz
 
 
-class CollatzBaseTestCase(object):
+class CollatzBaseTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -54,39 +54,29 @@ class CollatzBaseTestCase(object):
     def test_collatz_conjecture_with_number_13(self):
         self.assertEqual(10, self.collatz(13))
 
-    def collatz(self, n):
-        return collatz.collatz(n, cached=self.CACHED)
-
-
-class CollatzCachedTestCase(CollatzBaseTestCase, unittest.TestCase):
-
-    CACHED = True
-
     def test_should_create_cache_for_numbers(self):
         self.assertTrue(collatz._cache)
 
-
-class CollatzNotCachedTestCase(CollatzBaseTestCase, unittest.TestCase):
-
-    CACHED = False
-
-    def test_should_not_create_cache_for_numbers(self):
-        self.assertFalse(collatz._cache)
+    def collatz(self, n):
+        return collatz.collatz(n)
 
 
 class CollatzRunTestCase(unittest.TestCase):
 
     def test_get_better_result_with_100(self):
-        self.assertEqual((97, 119), collatz.run(100 + 1))
+        self.assertEqual((97, 119, 252), self.collatz(100))
 
     def test_get_better_result_with_1000(self):
-        self.assertEqual((871, 179), collatz.run(1000 + 1))
+        self.assertEqual((871, 179, 2229), self.collatz(1000))
 
     def test_get_better_result_with_10000(self):
-        self.assertEqual((6171, 262), collatz.run(10000 + 1))
+        self.assertEqual((6171, 262, 21665), self.collatz(10000))
 
     def test_get_better_result_with_100000(self):
-        self.assertEqual((77031, 351), collatz.run(100000 + 1))
+        self.assertEqual((77031, 351, 217213), self.collatz(100000))
 
     def test_get_better_result_with_1000000(self):
-        self.assertEqual((837799, 525), collatz.run(1000000 + 1))
+        self.assertEqual((837799, 525, 2168612), self.collatz(1000000))
+
+    def collatz(self, max_number):
+        return collatz.run(max_number + 1)

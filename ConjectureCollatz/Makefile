@@ -1,6 +1,11 @@
-run:
-	@time NUMBER=1000000 python "`pwd`/collatz.py"
-
-test:
+clean:
 	@find . -name '*.pyc' -delete
-	@python -m unittest discover
+
+profile: clean
+	@NUMBER=1000000 pypy -m cProfile collatz.py
+
+test: clean
+	@pypy -m unittest discover
+
+run: clean
+	@time NUMBER=1000000 pypy "collatz.py"
